@@ -2,6 +2,7 @@ import { Message } from "@/types/data";
 import { cn } from "@/lib/utils";
 import React, { useRef } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import ReactMarkdown from "react-markdown";
 import ChatBottombar from "./chat-bottombar";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -9,9 +10,15 @@ interface ChatListProps {
   messages?: Message[];
   sendMessage: (newMessage: Message) => void;
   isMobile: boolean;
+  loading: boolean;
 }
 
-export function ChatList({ messages, sendMessage, isMobile }: ChatListProps) {
+export function ChatList({
+  messages,
+  sendMessage,
+  isMobile,
+  loading,
+}: ChatListProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -50,24 +57,48 @@ export function ChatList({ messages, sendMessage, isMobile }: ChatListProps) {
                 originY: 0.5,
               }}
               className={cn(
-                "flex flex-col gap-2 p-4 whitespace-pre-wrap items-end"
-                // message.name !== selectedUser.name ? "items-end" : "items-start"
+                "flex flex-col gap-2 p-4 whitespace-pre-wrap items-end",
+                message.name == "Customer" ? "items-end" : "items-start"
               )}
             >
               <div className='flex gap-3 items-center'>
-                <span className=' bg-accent p-3 rounded-md max-w-xs'>
-                  {message.message}
-                </span>
+                {message.name === "AI Customer Support" && (
+                  <Avatar className='flex justify-center items-center'>
+                    <AvatarImage
+                      src='../../assets/robot.png'
+                      alt='robot'
+                      width={6}
+                      height={6}
+                    />
+                    <AvatarFallback className='bg-rose-300'>AI</AvatarFallback>
+                  </Avatar>
+                )}
 
-                <Avatar className='flex justify-center items-center'>
-                  <AvatarImage
-                    src={message.avatar}
-                    alt={message.name}
-                    width={6}
-                    height={6}
-                  />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
+                <span className=' bg-accent p-3 rounded-md max-w-xs'>
+                  <ReactMarkdown>{message.message}</ReactMarkdown>
+                  {message.name === "Customer" && loading ? (
+                    <div className='chat-bubble'>
+                      <div className='typing'>
+                        <div className='dot'></div>
+                        <div className='dot'></div>
+                        <div className='dot'></div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </span>
+                {message.name !== "AI Customer Support" && (
+                  <Avatar className='flex justify-center items-center'>
+                    <AvatarImage
+                      src={message.avatar}
+                      alt={message.name}
+                      width={6}
+                      height={6}
+                    />
+                    <AvatarFallback className='bg-green-300'>U</AvatarFallback>
+                  </Avatar>
+                )}
               </div>
             </motion.div>
           ))}
