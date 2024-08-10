@@ -1,7 +1,7 @@
 export const loggedInUserData = {
   id: 5,
-  avatar: "/LoggedInUser.jpg",
-  name: "Jakob Hoeg",
+  avatar: "",
+  name: "Customer",
 };
 
 export type LoggedInUserData = typeof loggedInUserData;
