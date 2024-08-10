@@ -15,8 +15,6 @@ export function ChatLayout({
   defaultCollapsed = false,
   navCollapsedSize,
 }: ChatLayoutProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
-  const [selectedUser, setSelectedUser] = React.useState();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
