@@ -1,12 +1,4 @@
-import {
-  FileImage,
-  Mic,
-  Paperclip,
-  PlusCircle,
-  SendHorizontal,
-  Smile,
-  ThumbsUp,
-} from "lucide-react";
+import { FileImage, Paperclip, SendHorizontal, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
@@ -99,8 +91,8 @@ export default function ChatBottombar({
             onKeyDown={handleKeyPress}
             onChange={handleInputChange}
             name='message'
-            placeholder='Chat with support...'
-            className=' w-full border rounded-full flex items-center h-9 resize-none overflow-hidden bg-background'
+            placeholder='Chat with AI customer support...'
+            className=' w-full border  flex h-9 items-center resize-none overflow-hidden bg-background'
           />
           <div className='absolute right-5 bottom-[1em] '>
             <EmojiPicker
