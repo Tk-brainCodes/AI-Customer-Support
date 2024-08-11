@@ -2,10 +2,18 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import {
   ChatPromptTemplate,
-  FewShotChatMessagePromptTemplate,
+  HumanMessagePromptTemplate,
 } from "@langchain/core/prompts";
 
-const model = new ChatGoogleGenerativeAI({
+import "cheerio";
+import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
+
+const llm = new ChatGoogleGenerativeAI({
   apiKey: `${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
   temperature: 0.7,
   model: "gemini-1.5-flash",
@@ -20,29 +28,87 @@ const model = new ChatGoogleGenerativeAI({
   ],
 });
 
-export const customerSupportPrompt = async (
-  customerQuery: string,
-  companyName: string,
-  productDetails: string
-) => {
-  const prompt = `
-    You are a customer support AI for ${companyName}. A customer has asked the following question:
+const webUrls = ["https://www.apple.com/ng/iphone-15/specs/"];
 
-    "${customerQuery}"
+const loadDocumentsFromUrls = async (urls: string[]) => {
+  const loaders = urls.map((url) => new CheerioWebBaseLoader(url));
+  const docs = [];
 
-    Please provide a helpful, polite, and concise response. Make sure your response is accurate and directly addresses the customer's concern. If the query is related to a specific product, provide relevant details from the product information below:
+  for (const loader of loaders) {
+    const loadedDocs = await loader.load();
+    docs.push(...loadedDocs);
+  }
 
-    Product Details:
-    ${productDetails}
+  return docs;
+};
 
-    If the question cannot be answered with the provided information, suggest the customer reach out to human support for further assistance.
+export const customerSupportPrompt = async (question: string) => {
+  const docs = await loadDocumentsFromUrls(webUrls);
 
-    Here is the customer support number: 222-222-333
-    And here is the email: techNestSolution@gmail.com
-  `;
+  const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 1000,
+    chunkOverlap: 200,
+  });
+
+  const splits = await textSplitter.splitDocuments(docs);
+  const vectorStore = await MemoryVectorStore.fromDocuments(
+    splits,
+    new GoogleGenerativeAIEmbeddings({
+      apiKey: "AIzaSyBr44D0WPWGNYimzBNIegZ-3ACmGXcI4P4",
+    })
+  );
+
+  // Retrieve and generate using the relevant snippets of the site.
+  const retriever = vectorStore.asRetriever();
+
+  const prompt = ChatPromptTemplate.fromMessages([
+    HumanMessagePromptTemplate.fromTemplate(
+      `You are a customer support AI for {companyName}. A customer has asked the following question:
+
+      "{question}"
+
+      Here is some context that may help you answer the question:
+      
+      {context}
+
+      Please provide a helpful, polite, and concise response. Make sure your response is accurate and directly addresses the customer's concern.
+
+      If the question cannot be answered with the provided information, suggest the customer reach out to human support for further assistance.`
+    ),
+  ]);
+
   try {
-    const res = await model.invoke(prompt);
-    return res.content;
+    const retrievedDocs = await retriever.invoke(question);
+
+    if (!Array.isArray(retrievedDocs)) {
+      throw new Error(
+        "Retrieved documents are not in the expected array format."
+      );
+    }
+
+    if (retrievedDocs.length === 0) {
+      throw new Error("No documents retrieved for the query.");
+    }
+
+    // Check if each document has the expected 'pageContent' property
+    const missingPageContent = retrievedDocs.filter((doc) => !doc.pageContent);
+    if (missingPageContent.length > 0) {
+      throw new Error("Some documents are missing the 'pageContent' property.");
+    }
+
+    const ragChain = await createStuffDocumentsChain({
+      llm,
+      prompt,
+      outputParser: new StringOutputParser(),
+    });
+
+    const response = await ragChain.invoke({
+      question: question,
+      context: retrievedDocs,
+      companyName: "Apple Iphone 15",
+    });
+
+    return response;
   } catch (error) {
     console.error("Error analyzing mood:", error);
     throw error;
