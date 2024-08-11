@@ -18,11 +18,7 @@ export function Chat({ isMobile }: ChatProps) {
 
     try {
       setLoadingResponse(true);
-      const response = await customerSupportPrompt(
-        newMessage.message,
-        "TechNest Solutions",
-        JSON.stringify(product_details)
-      );
+      const response = await customerSupportPrompt(newMessage.message);
 
       const aiMessage = {
         id: messagesState.length + 1,
