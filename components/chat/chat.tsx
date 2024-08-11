@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ChatList } from "./chat-list";
 import { customerSupportPrompt } from "@/lib/langchain";
-import { product_details } from "@/types/product-details";
 import ChatTopbar from "./chat-topbar";
+import axios from "axios";
 
 interface ChatProps {
   messages?: any[];
@@ -18,18 +18,24 @@ export function Chat({ isMobile }: ChatProps) {
 
     try {
       setLoadingResponse(true);
-      const response = await customerSupportPrompt(newMessage.message);
+      const response = await axios.post("/api/chatbot", { newMessage });
+
+    console.log("response from frotnend", response.data.response);
 
       const aiMessage = {
         id: messagesState.length + 1,
         name: "AI Customer Support",
         avatar: "",
-        message: response,
+        message: response.data.response,
       };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
       setLoadingResponse(false);
     } catch (error) {
-      console.log("failed to generate", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error:", error.response?.data || error.message);
+      } else {
+        console.error("Unexpected Error:", error);
+      }
     }
   };
 

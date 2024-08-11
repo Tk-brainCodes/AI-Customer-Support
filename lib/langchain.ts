@@ -6,6 +6,7 @@ import {
 } from "@langchain/core/prompts";
 
 import "cheerio";
+import axios from "axios";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
@@ -16,7 +17,7 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 const llm = new ChatGoogleGenerativeAI({
   apiKey: `${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
   temperature: 0.7,
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-pro",
   maxOutputTokens: 8192,
   topK: 64,
   topP: 0.95,
@@ -28,7 +29,7 @@ const llm = new ChatGoogleGenerativeAI({
   ],
 });
 
-const webUrls = ["https://www.apple.com/ng/iphone-15/specs/"];
+const webUrls = ["https://lilianweng.github.io/posts/2023-06-23-agent/"];
 
 const loadDocumentsFromUrls = async (urls: string[]) => {
   const loaders = urls.map((url) => new CheerioWebBaseLoader(url));
