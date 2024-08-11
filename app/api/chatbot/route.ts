@@ -2,9 +2,11 @@ import { customerSupportPrompt } from "@/lib/langchain";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
-export default async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: Request, res: NextApiResponse) {
   try {
-    const { question } = req.body;
+    const { question } = await req.json();
+
+    
     const response = await customerSupportPrompt(question);
     return NextResponse.json(response);
   } catch (error: any) {
