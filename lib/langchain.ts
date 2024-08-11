@@ -6,7 +6,6 @@ import {
 } from "@langchain/core/prompts";
 
 import "cheerio";
-import axios from "axios";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
@@ -17,7 +16,7 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 const llm = new ChatGoogleGenerativeAI({
   apiKey: `${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
   temperature: 0.7,
-  model: "gemini-1.5-pro",
+  model: "gemini-1.5-flash",
   maxOutputTokens: 8192,
   topK: 64,
   topP: 0.95,
@@ -29,7 +28,10 @@ const llm = new ChatGoogleGenerativeAI({
   ],
 });
 
-const webUrls = ["https://lilianweng.github.io/posts/2023-06-23-agent/"];
+const webUrls = [
+  "https://www.apple.com/ng/iphone-15/",
+  "https://www.apple.com/ng/iphone-15/specs/",
+];
 
 const loadDocumentsFromUrls = async (urls: string[]) => {
   const loaders = urls.map((url) => new CheerioWebBaseLoader(url));
@@ -55,7 +57,7 @@ export const customerSupportPrompt = async (question: string) => {
   const vectorStore = await MemoryVectorStore.fromDocuments(
     splits,
     new GoogleGenerativeAIEmbeddings({
-      apiKey: "AIzaSyBr44D0WPWGNYimzBNIegZ-3ACmGXcI4P4",
+      apiKey: `${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
     })
   );
 
@@ -80,6 +82,8 @@ export const customerSupportPrompt = async (question: string) => {
 
   try {
     const retrievedDocs = await retriever.invoke(question);
+
+    console.log("retriever docs", retrievedDocs);
 
     if (!Array.isArray(retrievedDocs)) {
       throw new Error(
@@ -106,7 +110,7 @@ export const customerSupportPrompt = async (question: string) => {
     const response = await ragChain.invoke({
       question: question,
       context: retrievedDocs,
-      companyName: "Apple Iphone 15",
+      companyName: "Apple",
     });
 
     return response;
