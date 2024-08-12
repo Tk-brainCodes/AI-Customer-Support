@@ -76,17 +76,6 @@ export function ChatList({
 
                 <span className=' bg-accent p-3 rounded-md max-w-xs'>
                   <ReactMarkdown>{message.message}</ReactMarkdown>
-                  {message.name === "Customer" && loading ? (
-                    <div className='chat-bubble'>
-                      <div className='typing'>
-                        <div className='dot'></div>
-                        <div className='dot'></div>
-                        <div className='dot'></div>
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
                 </span>
                 {message.name !== "AI Customer Support" && (
                   <Avatar className='flex justify-center items-center'>
