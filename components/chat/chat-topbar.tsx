@@ -20,7 +20,7 @@ export default function ChatTopbar() {
         </Avatar>
         <div className='flex flex-col'>
           <span className='font-medium'>
-            TechNest Solutions Customer Chatbot
+            Apples Iphone 15 Customer Chatbot
           </span>
         </div>
       </div>
