@@ -1,4 +1,4 @@
-# AI Customer Support Chatbot
+# AI RAG Customer Support Chatbot
 
 This project is an AI-powered customer support chatbot built using React and RAG (Retrieval-Augmented Generation). It features a chat interface where users can interact with an AI support agent that provides responses based on user queries and company-specific information.
 
