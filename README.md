@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AI Customer Support Chatbot
 
-## Getting Started
+This project is an AI-powered customer support chatbot built using React and RAG (Retrieval-Augmented Generation). It features a chat interface where users can interact with an AI support agent that provides responses based on user queries and company-specific information.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Real-time Chat**: Users can send messages and receive real-time responses from the AI.
+- **Dynamic AI Responses**: The AI generates responses based on user queries, leveraging retrieval-augmented generation for enhanced accuracy.
+- **Responsive Design**: The chat interface adapts to both mobile and desktop views.
+- **Animation**: Smooth animations for chat messages using `framer-motion`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Nextjs**: Robust frontend framework for client-side and server-side.
+- **RAG (Retrieval-Augmented Generation)**: For enhanced AI responses based on retrieval from a knowledge base.
+- **Framer Motion**: For animations.
+- **TypeScript**: For type safety.
+- **Tailwind CSS**: For styling.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Setup
 
-## Learn More
+### Prerequisites
 
-To learn more about Next.js, take a look at the following resources:
+- Node.js (v14 or higher)
+- npm or yarn
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. **Clone the repository:**
 
-## Deploy on Vercel
+    ```bash
+    git clone https://github.com/Tk-brainCodes/AI-Customer-Support.git
+    cd ai-customer-support-chatbot
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Install dependencies:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3. **Set up environment variables:**
+
+   Create a `.env.local` file in the root directory and add the following:
+
+    ```env
+    NEXT_PUBLIC_GOOGLE_API_KEY=your_google_api_key_here
+    ```
+
+4. **Run the development server:**
+
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+
+   Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+## Usage
+
+1. **Sending Messages:**
+
+   Users can type messages into the chat input and press Enter to send. The AI will generate a response based on the message content and the company's product details.
+
+2. **Customizing the Chatbot:**
+
+   - **Company Name and Product Details:** Update the `customerSupportPrompt` function in `lib/langchain.ts` to match your company's information.
+   - **AI Model Configuration:** Adjust the RAG model settings in `lib/langchain.ts` as needed.
+
+## Contributing
+
+1. **Fork the repository**
+2. **Create a new branch**: `git checkout -b feature/your-feature`
+3. **Commit your changes**: `git commit -am 'Add new feature'`
+4. **Push to the branch**: `git push origin feature/your-feature`
+5. **Create a new Pull Request**
+
+## Acknowledgements
+
+- [RAG (Retrieval-Augmented Generation)](https://huggingface.co/transformers/model_doc/rag.html) for providing advanced AI capabilities.
+- [Framer Motion](https://www.framer.com/api/motion/) for smooth animations.
+- [Tailwind CSS](https://tailwindcss.com/) for utility-first styling.
