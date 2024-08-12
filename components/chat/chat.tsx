@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChatList } from "./chat-list";
-import { customerSupportPrompt } from "@/lib/langchain";
+import { Message } from "@/types/data";
 import ChatTopbar from "./chat-topbar";
 import axios from "axios";
 
@@ -13,29 +13,25 @@ export function Chat({ isMobile }: ChatProps) {
   const [messagesState, setMessages] = useState<any[]>([]);
   const [loadingResponse, setLoadingResponse] = useState(false);
 
-  const sendMessage = async (newMessage: any) => {
+  const sendMessage = async (newMessage: Message) => {
     setMessages((prevMessage) => [...prevMessage, newMessage]);
 
     try {
       setLoadingResponse(true);
-      const response = await axios.post("/api/chatbot", { newMessage });
-
-    console.log("response from frotnend", response.data.response);
+      const response = await axios.post("/api/chatbot", {
+        question: newMessage.message,
+      });
 
       const aiMessage = {
         id: messagesState.length + 1,
         name: "AI Customer Support",
         avatar: "",
-        message: response.data.response,
+        message: response.data,
       };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
       setLoadingResponse(false);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios Error:", error.response?.data || error.message);
-      } else {
-        console.error("Unexpected Error:", error);
-      }
+      console.log("failed to generate", error);
     }
   };
 
